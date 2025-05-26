@@ -15,7 +15,7 @@ let capital = 11;
 const log = async (msg) => {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] ${msg}`);
-    await sendTelegramMessage(`**\[swing-bot\]:** ${msg}`);
+    await sendTelegramMessage(`**\\[swing-bot\\]:** ${msg}`);
 };
 
 const client = Binance({
@@ -52,11 +52,7 @@ async function main() {
 
         if (!entryPrice) {
             entryPrice = price;
-            const target = position === 'LONG'
-                ? entryPrice * (1 + profitTarget)
-                : entryPrice * (1 - profitTarget);
-
-            await log(`📌 Abrindo nova posição (${position}) a ${price}. Valor esperado: ${target.toFixed(2)}`);
+            await log(`📌 Abrindo nova posição (${position}) a ${price}.`);
             return;
         }
 
@@ -64,16 +60,14 @@ async function main() {
         const profit = (position === 'LONG' ? change : -change) * leverage;
 
         if (profit > profitTarget) {
-            capital *= (1 + profit - fee);
+            const effectiveFee = fee * leverage;
+            capital *= (1 + profit - effectiveFee);
+
             await log(`💰 Fechando ${position} com lucro bruto de ${(profit * 100).toFixed(2)}%. Capital: ${capital.toFixed(2)} USDT`);
             position = position === 'LONG' ? 'SHORT' : 'LONG';
             entryPrice = price;
 
-            const target = position === 'LONG'
-                ? entryPrice * (1 + profitTarget)
-                : entryPrice * (1 - profitTarget);
-
-            await log(`📌 Abrindo nova posição (${position}) a ${price}. Valor esperado: ${target.toFixed(2)}`);
+            await log(`📌 Abrindo nova posição (${position}) a ${price}.`);
         }
     });
 
