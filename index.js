@@ -15,7 +15,7 @@ let capital = 11;
 const log = async (msg) => {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] ${msg}`);
-    await sendTelegramMessage(`**\\[swing-bot\\]:** ${msg}`);
+    await sendTelegramMessage(`**\\[swing-bot]:** ${msg}`);
 };
 
 const client = Binance({
@@ -60,8 +60,7 @@ async function main() {
         const profit = (position === 'LONG' ? change : -change) * leverage;
 
         if (profit > profitTarget) {
-            const effectiveFee = fee * leverage;
-            const netProfit = profit - effectiveFee;
+            const netProfit = profit - (fee * 2);
             capital *= (1 + netProfit);
 
             await log(`💰 Fechando ${position} com lucro bruto de ${(profit * 100).toFixed(2)}% | líquido: ${(netProfit * 100).toFixed(2)}%. Capital: ${capital.toFixed(2)} USDT`);
