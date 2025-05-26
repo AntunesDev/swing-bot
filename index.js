@@ -5,7 +5,7 @@ const { sendTelegramMessage } = require('./utils/telegram');
 
 const symbol = 'BTCUSDT';
 const leverage = 5;
-const profitTarget = 0.001; // 0.10%
+const profitTarget = 0.0025; // 0.25%
 const fee = 0.0008;
 
 let position = 'LONG';
@@ -61,9 +61,10 @@ async function main() {
 
         if (profit > profitTarget) {
             const effectiveFee = fee * leverage;
-            capital *= (1 + profit - effectiveFee);
+            const netProfit = profit - effectiveFee;
+            capital *= (1 + netProfit);
 
-            await log(`💰 Fechando ${position} com lucro bruto de ${(profit * 100).toFixed(2)}%. Capital: ${capital.toFixed(2)} USDT`);
+            await log(`💰 Fechando ${position} com lucro bruto de ${(profit * 100).toFixed(2)}% | líquido: ${(netProfit * 100).toFixed(2)}%. Capital: ${capital.toFixed(2)} USDT`);
             position = position === 'LONG' ? 'SHORT' : 'LONG';
             entryPrice = price;
 
