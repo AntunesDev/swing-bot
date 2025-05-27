@@ -5,12 +5,14 @@ const { sendTelegramMessage } = require('./utils/telegram');
 
 const symbol = 'BTCUSDT';
 const leverage = 5;
-const profitTarget = 0.0025; // 0.25%
+const profitTarget = 0.0035; // 0.35%
 const fee = 0.0008;
+const COOLDOWN_MS = 5000; // 5 segundos
 
 let position = 'LONG';
 let entryPrice = null;
 let capital = 11;
+let lastOperationTime = 0;
 
 const log = async (msg) => {
     const timestamp = new Date().toISOString();
@@ -58,8 +60,10 @@ async function main() {
 
         const change = (price - entryPrice) / entryPrice;
         const profit = (position === 'LONG' ? change : -change) * leverage;
+        const now = Date.now();
 
-        if (profit > profitTarget) {
+        if (profit > profitTarget && now - lastOperationTime > COOLDOWN_MS) {
+            lastOperationTime = now;
             const netProfit = profit - (fee * 2);
             capital *= (1 + netProfit);
 
